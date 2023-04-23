@@ -69,7 +69,11 @@ export class RoomManagementComponent {
     return this.roomForm.controls;
   }
 
-  onSubmit() {
+  onSubmitCreate() {
+    this.submitted = true;
+  }
+
+  onSubmitEdit() {
     this.submitted = true;
   }
 }

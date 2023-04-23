@@ -38,7 +38,51 @@
     <button for="my-modal-5" class="btn btn-square btn-outline absolute right-2 top-2"
       (click)="closeCreateRoomModal()">✕</button>
     <div class="w-full p-8">
-      <form [formGroup]="roomForm" (ngSubmit)="onSubmit()">
+      <form [formGroup]="roomForm" (ngSubmit)="onSubmitCreate()">
+        <h1 class="text-4xl font-semibold my-6">{{title}} Room</h1>
+        <div class="form-control w-full mt-2">
+          <label class="label">
+            <span class="label-text">Room Code</span>
+          </label>
+          <input formControlName="room_code" type="text" placeholder="Type here" class="input input-bordered w-full" />
+          <label *ngIf="(roomFormControl.room_code.errors?.required && submitted)" class="label">
+            <span class="label-text-alt text-error">Room Code Required</span>
+          </label>
+        </div>
+        <div class="form-control w-full mt-2">
+          <label class="label">
+            <span class="label-text">Floor</span>
+          </label>
+          <input formControlName="floor" type="text" placeholder="Type here" class="input input-bordered w-full" />
+          <label *ngIf="(roomFormControl.floor.errors?.required && submitted)" class="label">
+            <span class="label-text-alt text-error">Floor Required</span>
+          </label>
+        </div>
+        <div class="form-control w-full mt-2">
+          <label class="label">
+            <span class="label-text">Building</span>
+          </label>
+          <input formControlName="building" type="text" placeholder="Type here" class="input input-bordered w-full" />
+          <label *ngIf="(roomFormControl.building.errors?.required && submitted)" class="label">
+            <span class="label-text-alt text-error">Building Required</span>
+          </label>
+        </div>
+        <div class="w-full mt-6 text-end">
+          <button class="m-1 btn btn-outline btn-accent rounded-md" (click)="closeCreateRoomModal()">Cancel</button>
+          <button class="m-1 text-end btn btn-primary bg-primary text-primary-content rounded-md">Confirm</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT ROOM MODAL -->
+<div for="my-modal-5" class="modal" [ngClass]="{ 'modal-open': createRoomModalState }" class="modal">
+  <div class="modal-box relative">
+    <button for="my-modal-5" class="btn btn-square btn-outline absolute right-2 top-2"
+      (click)="closeCreateRoomModal()">✕</button>
+    <div class="w-full p-8">
+      <form [formGroup]="roomForm" (ngSubmit)="onSubmitEdit()">
         <h1 class="text-4xl font-semibold my-6">{{title}} Room</h1>
         <div class="form-control w-full mt-2">
           <label class="label">

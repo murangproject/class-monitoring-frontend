@@ -67,7 +67,11 @@ export class SectionClassesComponent {
     return this.sectionForm.controls;
   }
 
-  onSubmit() {
+  onSubmitCreate() {
+    this.submitted = true;
+  }
+
+  onSubmitEdit() {
     this.submitted = true;
   }
 }

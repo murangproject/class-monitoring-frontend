@@ -37,7 +37,45 @@
   <div class="modal-box relative">
     <button for="my-modal-5" class="btn btn-square btn-outline absolute right-2 top-2" (click)="closeCreateSectionModal()">✕</button>
     <div class="w-full p-8">
-      <form [formGroup]="sectionForm" (ngSubmit)="onSubmit()">
+      <form [formGroup]="sectionForm" (ngSubmit)="onSubmitCreate()">
+        <h1 class="text-4xl font-semibold my-6">{{title}} Section</h1>
+        <div class="form-control w-full mt-2">
+          <label class="label">
+            <span class="label-text">Section Name</span>
+          </label>
+          <input formControlName="section_name" id="section_name" type="text" placeholder="Type here" class="input input-bordered w-full" />
+          <label *ngIf="(sectionFormControl.section_name.errors?.required && submitted)" class="label">
+            <span class="label-text-alt text-error">Section Name Required</span>
+          </label>
+        </div>
+        <div class="form-control w-full mt-2">
+          <label class="label">
+            <span class="label-text">Section Code</span>
+          </label>
+          <input formControlName="section_code" type="text" placeholder="Type here" class="input input-bordered w-full" />
+          <label *ngIf="(sectionFormControl.section_code.errors?.required && submitted)" class="label">
+            <span class="label-text-alt text-error">Section Code Required</span>
+          </label>
+        </div>
+        <div class="w-full mt-6 text-end">
+          <button class="m-1 btn btn-outline btn-accent rounded-md" (click)="closeCreateSectionModal()">Cancel</button>
+          <button type="submit" class="m-1 text-end btn btn-primary bg-primary text-primary-content rounded-md">Confirm</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT SECTION AND CLASSSES MODAL -->
+<div
+  for="my-modal-5"
+  class="modal"
+  [ngClass]="{ 'modal-open': createSectionModalState }"
+  class="modal">
+  <div class="modal-box relative">
+    <button for="my-modal-5" class="btn btn-square btn-outline absolute right-2 top-2" (click)="closeCreateSectionModal()">✕</button>
+    <div class="w-full p-8">
+      <form [formGroup]="sectionForm" (ngSubmit)="onSubmitEdit()">
         <h1 class="text-4xl font-semibold my-6">{{title}} Section</h1>
         <div class="form-control w-full mt-2">
           <label class="label">
