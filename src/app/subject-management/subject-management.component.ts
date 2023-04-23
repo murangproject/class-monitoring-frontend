@@ -69,7 +69,11 @@ export class SubjectManagementComponent {
     return this.subjectForm.controls;
   }
 
-  onSubmit() {
+  onSubmitCreate() {
+    this.submitted = true;
+  }
+
+  onSubmitEdit() {
     this.submitted = true;
   }
 }
