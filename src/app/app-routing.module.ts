@@ -78,6 +78,14 @@ const routes: Routes = [
               ).then(c => c.SemesterManagementComponent),
           },
           {
+            path: 'room-management',
+            title: 'Room Management',
+            loadComponent: () =>
+              import(
+                './room-management/room-management.component'
+              ).then(c => c.RoomManagementComponent),
+          },
+          {
             path: 'department-management',
             title: 'Department Management',
             loadComponent: () =>
@@ -86,12 +94,12 @@ const routes: Routes = [
               ).then(c => c.DepartmentManagementComponent),
           },
           {
-            path: 'curriculum-management',
-            title: 'Curriculum Management',
+            path: 'section-classes',
+            title: 'Section/ Classes',
             loadComponent: () =>
               import(
-                './curriculum-management/curriculum-management.component'
-              ).then(c => c.CurriculumManagementComponent),
+                './section-classes/section-classes.component'
+              ).then(c => c.SectionClassesComponent),
           },
           {
             path: 'curriculum-management/:id',

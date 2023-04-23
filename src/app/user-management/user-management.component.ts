@@ -18,20 +18,14 @@ import { catchError, map, of, tap } from 'rxjs';
 export class UserManagementComponent implements OnInit {
   activeUsers$ = this.userService.getActive();
   invitedUsers$ = this.userService.getInvited();
-
-  inviteUserForm: any = {
-    email: '',
-    role_name: '',
-    role_type: '',
-  };
+  submitted = false;
+  title = '';
 
   activeUserForm: any = {
-    email: '',
     first_name: '',
     middle_name: '',
     last_name: '',
     role_name: '',
-    role_type: '',
   };
 
   // Select
@@ -41,9 +35,8 @@ export class UserManagementComponent implements OnInit {
   tab: 'active' | 'invited' = 'active';
 
   // Modals
-  createInviteUserModalState: boolean = false;
+  createActiveUserModalState: boolean = false;
   deleteUserModalState: boolean = false;
-  updateInvitedUserModalState: boolean = false;
   updateActiveUserModalState: boolean = false;
 
   // Toast
@@ -57,65 +50,35 @@ export class UserManagementComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.inviteUserForm = this.formBuilder.group({
-      email: ['', [Validators.required, Validators.email]],
-      role_name: ['', Validators.required],
-      role_type: ['', Validators.required],
-    });
-
     this.activeUserForm = this.formBuilder.group({
-      email: ['', [Validators.required, Validators.email]],
       first_name: ['', Validators.required],
-      middle_name: [''],
+      middle_name: ['', Validators.required],
       last_name: ['', Validators.required],
       role_name: ['', Validators.required],
-      role_type: ['', Validators.required],
     });
 
     this.userService.init();
+  }
+
+  get userFormControl() {
+    return this.activeUserForm.controls;
   }
 
   select(id: number) {
     this.selectedId = id;
   }
 
-  openCreateInviteUserModal() {
-    this.createInviteUserModalState = true;
-    this.inviteUserForm.reset();
-  }
-
-  closeCreateInviteUserModal() {
-    this.createInviteUserModalState = false;
-    this.inviteUserForm.reset();
-    this.selectedId = -1;
-  }
-
   openDeleteUserModal() {
     this.deleteUserModalState = true;
+    this.activeUserForm.reset();
+    this.submitted = false;
   }
 
   closeDeleteUserModal() {
     this.deleteUserModalState = false;
     this.selectedId = -1;
-  }
-
-  openUpdateInviteUserModal() {
-    this.updateInvitedUserModalState = true;
-    this.invitedUsers$
-      .pipe(
-        tap(users =>
-          this.inviteUserForm.patchValue(
-            users.find(user => user.id === this.selectedId)
-          )
-        )
-      )
-      .subscribe();
-  }
-
-  closeUpdateInviteUserModal() {
-    this.updateInvitedUserModalState = false;
-    this.inviteUserForm.reset();
-    this.selectedId = -1;
+    this.activeUserForm.reset();
+    this.submitted = false;
   }
 
   openUpdateActiveUserModal() {
@@ -129,51 +92,78 @@ export class UserManagementComponent implements OnInit {
         )
       )
       .subscribe();
+      this.activeUserForm.reset();
+      this.submitted = false;
+  }
+
+  openCreateActiveUserModal() {
+    this.title = 'Create'
+    this.createActiveUserModalState = true;
+    this.activeUserForm.reset();
+    this.submitted = false;
+  }
+
+  openEditActiveUserModal() {
+    this.title = 'Edit'
+    this.createActiveUserModalState = true;
+    this.activeUserForm.reset();
+    this.submitted = false;
+  }
+
+  closeCreateActiveUserModal() {
+    this.createActiveUserModalState = false;
+    this.activeUserForm.reset();
+    this.submitted = false;
   }
 
   closeUpdateActiveUserModal() {
     this.updateActiveUserModalState = false;
     this.activeUserForm.reset();
     this.selectedId = -1;
+    this.submitted = false;
+  }
+
+  // onSubmitUpdateActiveUser() {
+  //   this.submitted = true;
+  //   if (this.activeUserForm.invalid) return;
+
+  //   this.userService
+  //     .updateInvitedUser(this.selectedId, this.activeUserForm.value)
+  //     .subscribe({
+  //       next: () => {
+  //         this.toastUtil('User updated successfully', true);
+  //         this.userService.init();
+  //         this.closeUpdateActiveUserModal();
+  //       },
+  //       error: () => {
+  //         this.toastUtil('User update failed', false);
+  //         this.userService.init();
+  //         this.closeUpdateActiveUserModal();
+  //       },
+  //     });
+  //     this.activeUserForm.reset();
+  //     this.submitted = false;
+  // }
+
+  deleteUser() {
+    this.userService.delete(this.selectedId).subscribe({
+      next: () => {
+        this.toastUtil('User deleted successfully', true);
+        this.userService.init();
+        this.closeDeleteUserModal();
+      },
+      error: () => {
+        this.toastUtil('User deletion failed', false);
+        this.userService.init();
+        this.closeDeleteUserModal();
+      },
+    });
+
+    this.activeUserForm.reset();
+    this.submitted = false;
   }
 
   onSubmitCreateUser() {
-    if (this.inviteUserForm.invalid) return;
-
-    this.userService.create(this.inviteUserForm.value).subscribe({
-      next: () => {
-        this.toastUtil('User created successfully', true);
-        this.userService.init();
-        this.closeCreateInviteUserModal();
-      },
-      error: () => {
-        this.toastUtil('User creation failed', false);
-        this.userService.init();
-        this.closeCreateInviteUserModal();
-      },
-    });
-  }
-
-  onSubmitUpdateInvitedUser() {
-    if (this.inviteUserForm.invalid) return;
-
-    this.userService
-      .updateInvitedUser(this.selectedId, this.inviteUserForm.value)
-      .subscribe({
-        next: () => {
-          this.toastUtil('User updated successfully', true);
-          this.userService.init();
-          this.closeUpdateInviteUserModal();
-        },
-        error: () => {
-          this.toastUtil('User update failed', false);
-          this.userService.init();
-          this.closeUpdateInviteUserModal();
-        },
-      });
-  }
-
-  onSubmitUpdateActiveUser() {
     if (this.activeUserForm.invalid) return;
 
     this.userService
@@ -190,25 +180,71 @@ export class UserManagementComponent implements OnInit {
           this.closeUpdateActiveUserModal();
         },
       });
+    // this.submitted = true;
+    // this.createActiveUserModalState = true;
+    // if (this.activeUserForm.invalid) return;
+
+    // this.userService.create(this.activeUserForm.value).subscribe({
+    //   next: () => {
+    //     this.toastUtil('User created successfully', true);
+    //     this.userService.init();
+    //     this.closeCreateActiveUserModal();
+    //   },
+    //   error: () => {
+    //     this.toastUtil('User creation failed', false);
+    //     this.userService.init();
+    //     this.closeCreateActiveUserModal();
+    //   },
+    // });
+    // this.activeUserForm.reset();
+    // this.submitted = false;
   }
 
-  deleteUser() {
-    this.userService.delete(this.selectedId).subscribe({
-      next: () => {
-        this.toastUtil('User deleted successfully', true);
-        this.userService.init();
-        this.closeDeleteUserModal();
-      },
-      error: () => {
-        this.toastUtil('User deletion failed', false);
-        this.userService.init();
-        this.closeDeleteUserModal();
-      },
-    });
+  onSubmitEditUser() {
+    this.submitted = true;
+    this.createActiveUserModalState = true;
+    if (this.activeUserForm.invalid) return;
 
-    this.inviteUserForm.reset();
-    this.activeUserForm.reset();
+    this.userService
+      .updateInvitedUser(this.selectedId, this.activeUserForm.value)
+      .subscribe({
+        next: () => {
+          this.toastUtil('User updated successfully', true);
+          this.userService.init();
+          this.closeUpdateActiveUserModal();
+        },
+        error: () => {
+          this.toastUtil('User update failed', false);
+          this.userService.init();
+          this.closeUpdateActiveUserModal();
+        },
+      });
+      this.activeUserForm.reset();
+      this.submitted = false;
   }
+
+  // openEditActiveUserModal() {
+  //   this.title = 'Edit'
+  //   this.createActiveUserModalState = true;
+  //   if (this.activeUserForm.invalid) return;
+
+  //   this.userService
+  //     .updateInvitedUser(this.selectedId, this.activeUserForm.value)
+  //     .subscribe({
+  //       next: () => {
+  //         this.toastUtil('User updated successfully', true);
+  //         this.userService.init();
+  //         this.closeUpdateActiveUserModal();
+  //       },
+  //       error: () => {
+  //         this.toastUtil('User update failed', false);
+  //         this.userService.init();
+  //         this.closeUpdateActiveUserModal();
+  //       },
+  //     });
+  //     this.activeUserForm.reset();
+  //     this.submitted = false;
+  // }
 
   toastUtil(message: string, success: boolean) {
     this.toastModalState = true;
